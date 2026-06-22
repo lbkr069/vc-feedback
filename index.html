@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Value Creation — Feedback</title>
+<style>
+/* Design Language identisch zum Handout: Century Gothic, Navy/Gold */
+:root{
+  --navy:#2B3C4C; --gold:#C7A459; --titlegold:#C6A45C;
+  --ink:#36444F; --muted:#8C949B; --line:#E7EAED;
+  --card:#F5F6F8; --cardbd:#E6E9EC;
+  --red:#C5544B; --green:#5E9163;
+  --bg:#FBFBFC;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:"Century Gothic","Segoe UI Symbol","Avant Garde","Arial",sans-serif;
+  line-height:1.4;-webkit-font-smoothing:antialiased;}
+
+.wrap{max-width:620px;margin:0 auto;padding:22px 18px 56px;}
+
+/* ---------- Kopf ---------- */
+.head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;}
+.kicker{font-weight:600;font-size:11px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;}
+.head h1{font-weight:400;font-size:30px;color:var(--titlegold);margin:2px 0 0;line-height:1.04;}
+.brand{flex:none;padding-top:2px;}
+.logo{width:96px;height:auto;display:block;}
+.rule{height:2px;background:linear-gradient(to right,var(--gold) 0 120px,var(--line) 120px);margin:10px 0 4px;}
+.intro{font-size:14px;color:var(--ink);margin:8px 0 4px;}
+.intro b{color:var(--navy);font-weight:600;}
+.anon{font-size:12px;font-style:italic;color:var(--muted);margin:2px 0 0;}
+
+/* ---------- Sektion ---------- */
+.sec{display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--line);
+  padding-bottom:7px;margin:26px 0 14px;}
+.dia{width:10px;height:10px;background:var(--gold);transform:rotate(45deg);border-radius:1px;flex:none;}
+.sec h2{font-weight:700;font-size:17px;color:var(--navy);margin:0;}
+
+/* ---------- Frage-Block ---------- */
+.q{background:var(--card);border:1px solid var(--cardbd);border-radius:11px;
+  padding:15px 16px;margin:0 0 13px;}
+.q .label{font-weight:600;font-size:15px;color:var(--navy);margin:0 0 11px;}
+.q .label .opt{font-weight:400;font-size:12px;color:var(--muted);font-style:italic;}
+.q .hint{font-size:12px;color:var(--muted);margin:-6px 0 10px;}
+
+/* Sterne */
+.stars{display:flex;gap:6px;font-size:32px;line-height:1;user-select:none;}
+.stars span{cursor:pointer;color:#D9DDE1;transition:transform .08s ease,color .08s ease;}
+.stars span:active{transform:scale(.9);}
+.stars span.on{color:var(--gold);}
+.stars-cap{font-size:12px;color:var(--muted);margin-top:7px;min-height:15px;}
+
+/* Segment-Schalter */
+.seg{display:flex;gap:7px;flex-wrap:wrap;}
+.seg label{flex:1 1 0;min-width:88px;}
+.seg input{position:absolute;opacity:0;pointer-events:none;}
+.seg .pill{display:block;text-align:center;padding:10px 8px;border-radius:9px;
+  border:1px solid var(--cardbd);background:#fff;font-size:13px;font-weight:600;color:var(--ink);
+  cursor:pointer;transition:all .12s ease;}
+.seg input:checked + .pill{background:var(--gold);border-color:var(--gold);color:#fff;}
+.seg input:focus-visible + .pill{outline:2px solid var(--navy);outline-offset:2px;}
+/* 5-stufige Skala: alle Pills in eine Reihe, Text darf umbrechen */
+.seg.five label{flex:1 1 0;min-width:0;}
+.seg.five .pill{padding:9px 4px;font-size:11.5px;line-height:1.18;height:100%;display:flex;align-items:center;justify-content:center;}
+
+/* Chips (Mehrfachauswahl) */
+.chips{display:flex;gap:8px;flex-wrap:wrap;}
+.chips label{position:relative;}
+.chips input{position:absolute;opacity:0;pointer-events:none;}
+.chips .chip{display:inline-block;padding:8px 14px;border-radius:18px;border:1px solid var(--cardbd);
+  background:#fff;font-size:13px;color:var(--ink);cursor:pointer;transition:all .12s ease;}
+.chips input:checked + .chip{background:var(--gold);border-color:var(--gold);color:#fff;font-weight:600;}
+.chips input:focus-visible + .chip{outline:2px solid var(--navy);outline-offset:2px;}
+
+/* Skala 1–10 (Empfehlung) */
+.scale{display:flex;gap:5px;}
+.scale label{flex:1;}
+.scale input{position:absolute;opacity:0;pointer-events:none;}
+.scale .n{display:block;text-align:center;padding:11px 0;border-radius:8px;border:1px solid var(--cardbd);
+  background:#fff;font-size:14px;font-weight:600;color:var(--ink);cursor:pointer;transition:all .12s ease;}
+.scale input:checked + .n{background:var(--gold);border-color:var(--gold);color:#fff;}
+.scale-ends{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:6px;}
+
+/* Tiefe je Thema (Matrix) */
+.tlegend{display:grid;grid-template-columns:1fr 1fr 1fr;font-size:11px;color:var(--muted);margin:2px 0 14px;}
+.tlegend span:nth-child(2){text-align:center;}
+.tlegend span:nth-child(3){text-align:right;}
+.trow{margin:0 0 11px;}
+.trow:last-child{margin-bottom:0;}
+.tname{font-size:13px;font-weight:600;color:var(--navy);margin:0 0 6px;}
+.tscale{display:flex;gap:5px;}
+.tscale label{flex:1;}
+.tscale input{position:absolute;opacity:0;pointer-events:none;}
+.tscale .c{display:block;text-align:center;padding:9px 0;border-radius:7px;border:1px solid var(--cardbd);
+  background:#fff;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;transition:all .12s ease;}
+.tscale input:checked + .c{background:var(--gold);border-color:var(--gold);color:#fff;}
+.tscale input:focus-visible + .c{outline:2px solid var(--navy);outline-offset:2px;}
+
+/* Textfelder */
+textarea,input[type=text]{width:100%;font-family:inherit;font-size:14px;color:var(--ink);
+  background:#fff;border:1px solid var(--cardbd);border-radius:9px;padding:11px 12px;resize:vertical;}
+textarea{min-height:74px;}
+textarea:focus,input[type=text]:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(199,164,89,.18);}
+
+/* Senden */
+.submit{margin-top:8px;}
+.btn{width:100%;border:none;border-radius:11px;background:var(--navy);color:#fff;
+  font-family:inherit;font-weight:600;font-size:16px;padding:15px;cursor:pointer;
+  transition:background .15s ease,transform .08s ease;}
+.btn:hover{background:#23323f;}
+.btn:active{transform:scale(.99);}
+.btn:disabled{background:#9AA6B0;cursor:default;}
+.err{color:var(--red);font-size:13px;font-weight:600;margin-top:10px;min-height:16px;text-align:center;}
+
+/* Fußzeile */
+.foot{margin-top:30px;border-top:1px solid var(--line);padding-top:12px;
+  display:flex;justify-content:space-between;font-size:11px;color:var(--muted);flex-wrap:wrap;gap:6px;}
+.foot .pg{color:var(--gold);font-weight:600;}
+
+/* Danke-Screen */
+.thanks{display:none;text-align:center;padding:40px 10px 20px;}
+.thanks.show{display:block;animation:fade .4s ease;}
+.thanks .dia-big{width:18px;height:18px;background:var(--gold);transform:rotate(45deg);
+  border-radius:2px;margin:0 auto 22px;}
+.thanks h2{font-weight:400;font-size:26px;color:var(--titlegold);margin:0 0 10px;}
+.thanks p{font-size:15px;color:var(--ink);margin:0 auto;max-width:380px;}
+@keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+form.hide{display:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ========== KOPF ========== -->
+  <div class="head">
+    <div>
+      <div class="kicker">Finanzbildung · Feedback</div>
+      <h1>Wie war der Vortrag?</h1>
+    </div>
+    <div class="brand"><img class="logo" src="assets/logo.png" alt="Value Creation"></div>
+  </div>
+  <div class="rule"></div>
+  <p class="anon">Anonym — es werden keine Namen oder Kontaktdaten erfasst.</p>
+
+  <!-- ========== FORMULAR ========== -->
+  <form id="fb">
+
+    <div class="sec"><span class="dia"></span><h2>Gesamteindruck</h2></div>
+
+    <div class="q">
+      <p class="label">Wie hat dir der Vortrag insgesamt gefallen?</p>
+      <div class="stars" id="stars-overall" data-name="gesamt">
+        <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
+      </div>
+    </div>
+
+    <div class="q">
+      <p class="label">War der Inhalt gut verständlich?</p>
+      <div class="stars" id="stars-clear" data-name="verstaendlich">
+        <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
+      </div>
+    </div>
+
+    <div class="q">
+      <p class="label">Wie war das Tempo?</p>
+      <div class="seg five" data-name="tempo">
+        <label><input type="radio" name="tempo" value="viel zu langsam"><span class="pill">Viel zu langsam</span></label>
+        <label><input type="radio" name="tempo" value="etwas zu langsam"><span class="pill">Etwas zu langsam</span></label>
+        <label><input type="radio" name="tempo" value="genau richtig"><span class="pill">Genau richtig</span></label>
+        <label><input type="radio" name="tempo" value="etwas zu schnell"><span class="pill">Etwas zu schnell</span></label>
+        <label><input type="radio" name="tempo" value="viel zu schnell"><span class="pill">Viel zu schnell</span></label>
+      </div>
+    </div>
+
+    <div class="sec"><span class="dia"></span><h2>Inhalte</h2></div>
+
+    <div class="q">
+      <p class="label">Welche Themen fandest du am wertvollsten? <span class="opt">(Mehrfachauswahl)</span></p>
+      <div class="chips" data-name="themen">
+        <label><input type="checkbox" value="Fundament & Safety First"><span class="chip">Fundament &amp; Safety First</span></label>
+        <label><input type="checkbox" value="Assetklassen"><span class="chip">Assetklassen</span></label>
+        <label><input type="checkbox" value="Risiko & Diversifikation"><span class="chip">Risiko &amp; Diversifikation</span></label>
+        <label><input type="checkbox" value="Zinseszins & Sparpläne"><span class="chip">Zinseszins &amp; Sparpläne</span></label>
+        <label><input type="checkbox" value="Psychologie / Biases"><span class="chip">Psychologie / Biases</span></label>
+        <label><input type="checkbox" value="Schulden & Bonität"><span class="chip">Schulden &amp; Bonität</span></label>
+        <label><input type="checkbox" value="Steuern"><span class="chip">Steuern</span></label>
+        <label><input type="checkbox" value="Versicherungen"><span class="chip">Versicherungen</span></label>
+        <label><input type="checkbox" value="Empfehlungen (Podcasts etc.)"><span class="chip">Empfehlungen</span></label>
+      </div>
+    </div>
+
+    <div class="q">
+      <p class="label">Wie war die inhaltliche Tiefe je Thema?</p>
+      <div class="tlegend"><span>zu oberflächlich</span><span>genau richtig</span><span>zu tief</span></div>
+      <div id="depthMatrix"></div>
+    </div>
+
+    <div class="q">
+      <p class="label">Auf welche Themen sollten wir <b style="color:var(--green)">mehr Fokus</b> legen / tiefer gehen? <span class="opt">(Mehrfachauswahl)</span></p>
+      <div class="chips" data-name="mehr_fokus">
+        <label><input type="checkbox" value="Fundament & Safety First"><span class="chip">Fundament &amp; Safety First</span></label>
+        <label><input type="checkbox" value="Assetklassen"><span class="chip">Assetklassen</span></label>
+        <label><input type="checkbox" value="Risiko & Diversifikation"><span class="chip">Risiko &amp; Diversifikation</span></label>
+        <label><input type="checkbox" value="Zinseszins & Sparpläne"><span class="chip">Zinseszins &amp; Sparpläne</span></label>
+        <label><input type="checkbox" value="Psychologie / Biases"><span class="chip">Psychologie / Biases</span></label>
+        <label><input type="checkbox" value="Schulden & Bonität"><span class="chip">Schulden &amp; Bonität</span></label>
+        <label><input type="checkbox" value="Steuern"><span class="chip">Steuern</span></label>
+        <label><input type="checkbox" value="Versicherungen"><span class="chip">Versicherungen</span></label>
+        <label><input type="checkbox" value="Empfehlungen (Podcasts etc.)"><span class="chip">Empfehlungen</span></label>
+      </div>
+    </div>
+
+    <div class="q">
+      <p class="label">Welche Themen sollten wir <b style="color:var(--red)">kürzen</b> oder weglassen? <span class="opt">(Mehrfachauswahl)</span></p>
+      <div class="chips" data-name="kuerzen">
+        <label><input type="checkbox" value="Fundament & Safety First"><span class="chip">Fundament &amp; Safety First</span></label>
+        <label><input type="checkbox" value="Assetklassen"><span class="chip">Assetklassen</span></label>
+        <label><input type="checkbox" value="Risiko & Diversifikation"><span class="chip">Risiko &amp; Diversifikation</span></label>
+        <label><input type="checkbox" value="Zinseszins & Sparpläne"><span class="chip">Zinseszins &amp; Sparpläne</span></label>
+        <label><input type="checkbox" value="Psychologie / Biases"><span class="chip">Psychologie / Biases</span></label>
+        <label><input type="checkbox" value="Schulden & Bonität"><span class="chip">Schulden &amp; Bonität</span></label>
+        <label><input type="checkbox" value="Steuern"><span class="chip">Steuern</span></label>
+        <label><input type="checkbox" value="Versicherungen"><span class="chip">Versicherungen</span></label>
+        <label><input type="checkbox" value="Empfehlungen (Podcasts etc.)"><span class="chip">Empfehlungen</span></label>
+      </div>
+    </div>
+
+    <div class="q">
+      <p class="label">Was hat dir besonders gut gefallen? <span class="opt">(optional)</span></p>
+      <textarea name="gefallen" placeholder="Das fand ich stark …"></textarea>
+    </div>
+
+    <div class="q">
+      <p class="label">Was könnten wir verbessern? <span class="opt">(optional)</span></p>
+      <textarea name="verbessern" placeholder="Das würde ich anders machen …"></textarea>
+    </div>
+
+    <div class="sec"><span class="dia"></span><h2>Sonstiges</h2></div>
+
+    <div class="q">
+      <p class="label">Noch etwas, das du loswerden möchtest? <span class="opt">(optional)</span></p>
+      <textarea name="sonstiges" placeholder="Freies Feld …"></textarea>
+    </div>
+
+    <div class="submit">
+      <button type="submit" class="btn" id="send">Feedback absenden</button>
+      <div class="err" id="err"></div>
+    </div>
+
+  </form>
+
+  <!-- ========== DANKE ========== -->
+  <div class="thanks" id="thanks">
+    <div class="dia-big"></div>
+    <h2>Vielen Dank!</h2>
+    <p>Dein Feedback ist angekommen. Es hilft mir wirklich weiter — danke, dass du dir die Zeit genommen hast.</p>
+  </div>
+
+  <div class="foot">
+    <span>Keine Anlageberatung — ausschließlich zu Informations- und Schulungszwecken.</span>
+    <span class="pg">Value Creation</span>
+  </div>
+
+</div>
+
+<script>
+/* ==========================================================================
+   EINSTELLUNG: Hier die URL deiner Google-Apps-Script-Web-App eintragen.
+   (Bereitstellen → Web-App → "Jeder" → /exec-URL kopieren — siehe Anleitung)
+   ========================================================================== */
+const ENDPOINT = "https://script.google.com/macros/s/AKfycbwWZml5iGGmOkL-GbRVNNwCHe7948VIAhiLPcEQY22lFhDbL153CVL1e4R_fogH8_hmaQ/exec";
+
+/* ---- Sterne-Logik ---- */
+function setupStars(id){
+  const box = document.getElementById(id);
+  let value = 0;
+  const paint = n => box.querySelectorAll("span").forEach(s=>{
+    s.classList.toggle("on", +s.dataset.v <= n);
+  });
+  box.querySelectorAll("span").forEach(s=>{
+    s.addEventListener("mouseenter", ()=>paint(+s.dataset.v));
+    s.addEventListener("mouseleave", ()=>paint(value));
+    s.addEventListener("click", ()=>{ value = +s.dataset.v; paint(value); });
+  });
+  return { get value(){ return value; } };
+}
+const starOverall = setupStars("stars-overall");
+const starClear   = setupStars("stars-clear");
+
+/* ---- Tiefe je Thema: Matrix aufbauen ---- */
+const THEMES = [
+  ["fundament","Fundament & Safety First"],
+  ["assetklassen","Assetklassen"],
+  ["risiko","Risiko & Diversifikation"],
+  ["zinseszins","Zinseszins & Sparpläne"],
+  ["psychologie","Psychologie / Biases"],
+  ["schulden","Schulden & Bonität"],
+  ["steuern","Steuern"],
+  ["versicherungen","Versicherungen"],
+  ["empfehlungen","Empfehlungen"]
+];
+const DEPTH  = ["zu oberflächlich","eher zu oberflächlich","genau richtig","eher zu tief","zu tief"];
+const GLYPH  = ["−−","−","✓","+","++"];   // weniger Tiefe ← → mehr Tiefe; Mitte = ideal
+(function buildDepthMatrix(){
+  const m = document.getElementById("depthMatrix");
+  THEMES.forEach(function(t){
+    const key = t[0], label = t[1];
+    let cells = "";
+    DEPTH.forEach(function(word, i){
+      const mid = (i === 2) ? " mid" : "";
+      cells += '<label><input type="radio" name="d_'+key+'" value="'+word+'">'
+             + '<span class="c'+mid+'" title="'+word+'">'+GLYPH[i]+'</span></label>';
+    });
+    const row = document.createElement("div");
+    row.className = "trow";
+    row.innerHTML = '<p class="tname">'+label+'</p><div class="tscale">'+cells+'</div>';
+    m.appendChild(row);
+  });
+})();
+
+/* ---- Absenden ---- */
+const form   = document.getElementById("fb");
+const errBox = document.getElementById("err");
+const sendBtn= document.getElementById("send");
+
+form.addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  errBox.textContent = "";
+
+  if(starOverall.value === 0){
+    errBox.textContent = "Bitte vergib mindestens eine Gesamtbewertung.";
+    document.getElementById("stars-overall").scrollIntoView({behavior:"smooth", block:"center"});
+    return;
+  }
+
+  const pick = sel => [...form.querySelectorAll(sel + ' input:checked')].map(i=>i.value).join(", ");
+  const data = {
+    gesamt:        starOverall.value,
+    verstaendlich: starClear.value || "",
+    tempo:         (form.querySelector('input[name="tempo"]:checked')||{}).value || "",
+    themen:        pick('[data-name="themen"]'),
+    mehr_fokus:    pick('[data-name="mehr_fokus"]'),
+    kuerzen:       pick('[data-name="kuerzen"]'),
+    gefallen:      form.gefallen.value.trim(),
+    verbessern:    form.verbessern.value.trim(),
+    sonstiges:     form.sonstiges.value.trim(),
+    timestamp:     new Date().toISOString()
+  };
+  // Tiefe je Thema anhängen (tiefe_<key>)
+  THEMES.forEach(function(t){
+    data["tiefe_"+t[0]] = (form.querySelector('input[name="d_'+t[0]+'"]:checked')||{}).value || "";
+  });
+
+  sendBtn.disabled = true;
+  sendBtn.textContent = "Wird gesendet …";
+
+  try{
+    // application/x-www-form-urlencoded => keine CORS-Preflight-Probleme mit Apps Script
+    await fetch(ENDPOINT, {
+      method: "POST",
+      mode: "no-cors",
+      headers: {"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},
+      body: new URLSearchParams(data).toString()
+    });
+    // Bei no-cors ist die Antwort "opaque" — wir gehen bei ausbleibendem Fehler von Erfolg aus.
+    form.classList.add("hide");
+    document.getElementById("thanks").classList.add("show");
+    window.scrollTo({top:0, behavior:"smooth"});
+  }catch(err){
+    sendBtn.disabled = false;
+    sendBtn.textContent = "Feedback absenden";
+    errBox.textContent = "Konnte nicht senden. Internetverbindung prüfen und erneut versuchen.";
+  }
+});
+</script>
+</body>
+</html>
